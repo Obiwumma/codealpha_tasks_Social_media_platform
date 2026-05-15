@@ -1,15 +1,14 @@
 "use client"; 
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 // import { json } from "stream/consumers";
 
 export default function CreatePost() {
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Since we haven't built a Login system yet, we will temporarily hardcode 
-  // the exact same userId you just used in Postman so the database accepts it.
-  // (Paste your actual userId from Postman here!)
+  const router = useRouter()
   const testUserId = "ea95eed8-de74-4f2c-90e4-5b58e4f6bd8a"; 
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -40,7 +39,7 @@ export default function CreatePost() {
       }
 
       setContent("")
-    
+      router.refresh()    
 
     } catch (error) {
       console.error("Failed to post:", error);
