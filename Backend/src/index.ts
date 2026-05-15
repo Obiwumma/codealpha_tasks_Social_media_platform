@@ -1,5 +1,6 @@
 import  express from "express";
 import userRoutes from "./routes/userRoutes.js";
+import postRoutes from "./routes/postRoutes.js"
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -11,6 +12,7 @@ app.get("/api/health", (req, res) => {
 });
 
 app.use("/api/users", userRoutes);
+app.use("/api/posts", postRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
