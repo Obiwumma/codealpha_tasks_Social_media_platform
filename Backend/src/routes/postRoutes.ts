@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { db } from "../db/index.js";
 import { posts } from "../db/schema.js";
+import { desc } from "drizzle-orm";
 
 const router = Router();
 
@@ -18,7 +19,7 @@ router.post("/", async (req, res) => {
 
     // 3. Respond to the frontend
     const newPost = result[0];
-    
+
     res.status(201).json(newPost);
 
   } catch (error) {
@@ -26,5 +27,16 @@ router.post("/", async (req, res) => {
     res.status(500).json({ error: "Failed to create post" });
   }
 });
+
+router.get('/', async (req, res) => {
+  try {
+    const allPost = await db.select().from(posts).orderBy(desc(posts.createdAt));
+
+    res.status(200).json(allPost)
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch posts" });
+  }
+})
 
 export default router;
