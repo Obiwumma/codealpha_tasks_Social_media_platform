@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { db } from "../db/index.js";
 import { comments } from "../db/schema.js";
+import { desc, eq } from "drizzle-orm";
 
 const router = Router();
 
@@ -26,6 +27,25 @@ router.post("/", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to create comment" });
+  }
+});
+
+router.get("/:postId", async (req, res) => {
+  try {
+    // 1. Extract the postId from the URL (Notice it is req.params, not req.body!)
+    const { postId } = req.params;
+
+    const postComments = await db.select()
+      .from(comments)
+      .where(eq(comments.postId, postId))
+      .orderBy(desc(comments.createdAt));
+
+    // 3. Send back the array of comments
+    res.status(200).json(postComments);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch comments" });
   }
 });
 
