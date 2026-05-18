@@ -1,5 +1,6 @@
 import CreatePost from "./components/CreatePost";
 import CommentSection  from "./components/CommentSection";
+import FollowButton from "./components/FollowButton";
 
 interface User {
   id: number;
@@ -54,8 +55,13 @@ export default async function Home() {
           {/* Give it a nice white background, some padding, and a border to match the CreatePost box */}
           {posts.map((post) => (
             <div key={post.id} className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-              <p className="text-gray-900">{post.content}</p>
-
+              <div className="flex justify-between items-start mb-2">
+                <p className="text-gray-900 text-lg">{post.content}</p>
+                
+                {/* Inject the follow button, passing the ID of the post's author! */}
+                <FollowButton targetUserId={post.userId} />
+              </div>
+              
               <CommentSection postId={post.id} />
             </div>
           ))}
