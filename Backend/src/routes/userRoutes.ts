@@ -2,6 +2,8 @@ import { Router } from "express";
 import { db } from "../db/index.js";
 import { users } from "../db/schema.js";
 import bcrypt from "bcrypt"
+import  jwt  from "jsonwebtoken";
+import { eq } from "drizzle-orm";
 
 const router = Router();
 
@@ -46,5 +48,48 @@ router.get("/", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch users" });
   }
 });
+
+// Login user
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password} = req.body;
+    // TASK 1: Find the user in the database by their email.
+    // Hint: Use db.select().from(users).where(eq(users.email, email))
+    const user = db.select().from(users).where(eq(users.email, email))
+
+    if (!user) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
+
+    // TASK 2: Check if the password matches using bcrypt
+    const isPasswordCorrect = await bcrypt.compare(password, passwordHash)
+
+    if (!isPasswordCorrect) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
+
+    // TASK 3: Generate the VIP Wristband (JWT)
+    // The first argument is the payload (what data wehide inside the wristband)
+    // The second argument is your "Secret Key" (a massive password only the server knows)
+    // The third argument is when the wristband expires
+    const token = jwt.sign(
+      { userId: user.id }, 
+      "MY_SUPER_SECRET_KEY_DONT_SHARE", 
+      { expiresIn: "7d" } // Wristband expires in 7 days
+    );
+
+    // 4. Send the wristband (and safe user data) to the frontend!
+    const { passwordHash, ...safeUser } = user;
+    res.status(200).json({
+      message: "Login successful",
+      token: token,
+      user: safeUser
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to log in" });
+  }
+})
 
 export default router
