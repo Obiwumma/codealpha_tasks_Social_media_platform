@@ -19,7 +19,7 @@ export default function LoginForm() {
 
     try {
       // 2. Hit your new, secure backend route
-      const res = await fetch("http://127.0.0.1:3000/api/users/register", {
+      const res = await fetch("http://127.0.0.1:3000/api/users/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

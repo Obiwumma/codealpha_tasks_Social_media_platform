@@ -23,7 +23,7 @@ export default function RegisterForm() {
       // 2. The body needs to be a JSON string containing username, email, and password.
       // 3. If !res.ok, throw an Error with the backend's message.
       // 4. If successful, redirect the user to the login page using router.push()
-      const res = await fetch("http://127.0.0.1:3000/api/users/login", {
+      const res = await fetch("http://127.0.0.1:3000/api/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({username, email, password})

@@ -60,6 +60,10 @@ router.post("/login", async (req, res) => {
     // TASK 1: Find the user in the database by their email.
     // Hint: Use db.select().from(users).where(eq(users.email, email))
     const user = await db.select().from(users).where(eq(users.email, email))
+    
+    if (user.length === 0) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
 
     if (!user) {
       return res.status(401).json({ error: "Invalid email or password" });
