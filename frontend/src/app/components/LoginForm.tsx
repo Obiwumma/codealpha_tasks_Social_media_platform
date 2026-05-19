@@ -33,7 +33,9 @@ export default function LoginForm() {
       }
 
       // 4. THE MAGIC VAULT: Save the VIP wristband to the browser!
+      // THE MAGIC VAULT
       localStorage.setItem("token", data.token);
+      localStorage.setItem("userId", data.user.id); // ADD THIS LINE!
 
       // 5. Success! Send the user to the home page feed
       router.push("/");

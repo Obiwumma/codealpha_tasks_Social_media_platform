@@ -18,14 +18,15 @@ export default function CreatePost() {
     setIsSubmitting(true);
 
     try {
-      // YOUR TURN: Write the fetch() request to send this data to your backend!
-      // Remember: 
+      const token = localStorage.getItem("token");
+
       const response = await fetch('http://127.0.0.1:3000/api/posts', {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
         },
-        body: JSON.stringify({ content: content, userId: testUserId })
+        body: JSON.stringify({ content: content })
       })
       // 1. It needs to go to http://127.0.0.1:3000/api/posts
       // 2. The method needs to be "POST"

@@ -2,14 +2,16 @@ import { Router } from "express";
 import { db } from "../db/index.js";
 import { followers } from "../db/schema.js";
 import { and, eq } from "drizzle-orm";
+import { checkAuth, type AuthRequest } from "../middleware/authMiddleware.js";
 
 const router = Router();
 
 // Endpoint to FOLLOW a user
-router.post("/", async (req, res) => {
+router.post("/", checkAuth,  async (req: AuthRequest, res) => {
   try {
     // 1. Extract the two IDs
-    const { followerId, followingId } = req.body;
+    const {  followingId } = req.body;
+    const followerId = req.userId;
 
     // A quick safety check so users can't follow themselves!
     if (followerId === followingId) {
@@ -37,9 +39,11 @@ router.post("/", async (req, res) => {
 });
 
 // Endpoint to UNFOLLOW a user
-router.delete("/", async (req, res) => {
+router.delete("/", checkAuth,  async (req: AuthRequest, res) => {
   try {
-    const { followerId, followingId } = req.body;
+
+    const { followingId } = req.body;
+    const followerId = req.userId!
 
     // 2. YOUR TURN: Write the Drizzle query to delete the relationship!
     await db.delete(followers)
