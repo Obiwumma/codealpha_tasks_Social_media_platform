@@ -11,7 +11,7 @@ router.post("/", checkAuth,  async (req: AuthRequest, res) => {
   try {
     // 1. Extract the two IDs
     const {  followingId } = req.body;
-    const followerId = req.userId;
+    const followerId = req.userId!;
 
     // A quick safety check so users can't follow themselves!
     if (followerId === followingId) {

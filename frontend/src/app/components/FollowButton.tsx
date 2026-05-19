@@ -1,15 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function FollowButton({ targetUserId }: { targetUserId: string }) {
   const [isFollowing, setIsFollowing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  
+  // 1. Add these two new state variables
+  const [isMounted, setIsMounted] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const router = useRouter();
 
-  const currentUserId = typeof window !== "undefined" ? localStorage.getItem("userId") : null; 
+  // 2. Wait for the component to mount in the browser before reading localStorage
+  useEffect(() => {
+    const loadState = async () => {
+      setIsMounted(true);
+      setCurrentUserId(localStorage.getItem("userId"));
+    };
+    loadState();
+  }, []);
 
+  // 3. Prevent rendering anything until the client is fully mounted (fixes hydration!)
+  if (!isMounted) return null;
   if (currentUserId === targetUserId) return null;
 
   const handleFollowToggle = async () => {

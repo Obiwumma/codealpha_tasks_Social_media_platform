@@ -40,8 +40,12 @@ export default function LoginForm() {
       // 5. Success! Send the user to the home page feed
       router.push("/");
       
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Failed to process request");
+      }
     } finally {
       setIsLoading(false);
     }

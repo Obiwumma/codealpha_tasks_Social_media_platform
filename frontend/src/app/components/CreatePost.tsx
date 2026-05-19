@@ -9,7 +9,6 @@ export default function CreatePost() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const router = useRouter()
-  const testUserId = "ea95eed8-de74-4f2c-90e4-5b58e4f6bd8a"; 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); // Prevents the page from refreshing

@@ -37,8 +37,12 @@ export default function RegisterForm() {
 
       router.push("/login")      
       
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Failed to process request");
+      }
     } finally {
       setIsLoading(false);
     }

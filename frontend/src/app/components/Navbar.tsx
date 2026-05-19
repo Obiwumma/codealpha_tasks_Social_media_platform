@@ -11,7 +11,10 @@ export default function Navbar() {
 
   // Check the vault every time the route changes
   useEffect(() => {
-    setCurrentUserId(localStorage.getItem("userId"));
+    const loadState = async () => {
+      setCurrentUserId(localStorage.getItem("userId"));
+    };
+    loadState();
   }, [pathname]);
 
   const handleLogout = () => {

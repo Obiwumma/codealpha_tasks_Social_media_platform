@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { db } from "../db/index.js";
-import { users } from "../db/schema.js";
+import { users, posts } from "../db/schema.js";
 import bcrypt from "bcrypt"
 import  jwt  from "jsonwebtoken";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import dotenv from "dotenv"
 
 
@@ -25,7 +25,7 @@ router.post("/", async (req, res) => {
     }).returning()
 
 
-    const newUser = result[0]
+    const newUser = result[0]!
 
     // 3. Respond to the frontend (Replace 'newUser' with whatever you name your result)
     const { passwordHash, ...safeUser } = newUser;
@@ -60,7 +60,7 @@ router.post("/login", async (req, res) => {
     // TASK 1: Find the user in the database by their email.
     // Hint: Use db.select().from(users).where(eq(users.email, email))
     const user = await db.select().from(users).where(eq(users.email, email))
-    
+
     if (user.length === 0) {
       return res.status(401).json({ error: "Invalid email or password" });
     }
@@ -100,5 +100,45 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ error: "Failed to log in" });
   }
 })
+
+// Get a specific user's profile AND their posts
+router.get("/:id", async (req, res) => {
+  try {
+    const targetUserId = req.params.id;
+
+    // 1. Fetch the user details (omitting the password hash for safety)
+    const userResult = await db.select({
+      id: users.id,
+      username: users.username,
+      email: users.email,
+      createdAt: users.createdAt
+    })
+    .from(users)
+    .where(eq(users.id, targetUserId));
+
+    if (userResult.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const userProfile = userResult[0];
+
+    // 2. Fetch all posts written by this user
+    // Assuming you have imported the `posts` table at the top of the file!
+    const userPosts = await db.select()
+      .from(posts)
+      .where(eq(posts.userId, targetUserId))
+      .orderBy(desc(posts.createdAt)); // Optional: import 'desc' to show newest first
+
+    // 3. Send it all back as one clean package
+    res.status(200).json({
+      profile: userProfile,
+      posts: userPosts
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch user profile" });
+  }
+});
 
 export default router

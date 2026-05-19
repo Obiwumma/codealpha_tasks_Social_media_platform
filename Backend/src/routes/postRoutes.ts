@@ -6,9 +6,7 @@ import { checkAuth, type AuthRequest } from "../middleware/authMiddleware.js";
 // import { Request } from "express";
 
 const router = Router();
-export interface AuthRequest extends Request {
-  userId?: string;
-}
+
 
 // Endpoint to create a new post
 router.post("/", checkAuth, async (req: AuthRequest, res) => {
