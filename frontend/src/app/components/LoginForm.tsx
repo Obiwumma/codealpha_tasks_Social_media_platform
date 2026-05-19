@@ -19,7 +19,7 @@ export default function LoginForm() {
 
     try {
       // 2. Hit your new, secure backend route
-      const res = await fetch("http://127.0.0.1:3000/api/users/login", {
+      const res = await fetch("http://127.0.0.1:3000/api/users/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -29,7 +29,7 @@ export default function LoginForm() {
 
       // 3. Catch invalid credentials
       if (!res.ok) {
-        throw new Error(data.error || "Failed to log in");
+        throw new Error(data.error || "Failed to sign up");
       }
 
       // 4. THE MAGIC VAULT: Save the VIP wristband to the browser!
