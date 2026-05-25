@@ -2,23 +2,23 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
-    // 1. Stop the page from refreshing when we submit the form!
     e.preventDefault(); 
     setIsLoading(true);
-    setError(""); // Clear any old errors
+    setError(""); 
 
     try {
-      // 2. Hit your new, secure backend route
       const res = await fetch("http://127.0.0.1:3000/api/users/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -27,17 +27,13 @@ export default function LoginForm() {
 
       const data = await res.json();
 
-      // 3. Catch invalid credentials
       if (!res.ok) {
-        throw new Error(data.error || "Failed to sign up");
+        throw new Error(data.error || "Failed to log in");
       }
 
-      // 4. THE MAGIC VAULT: Save the VIP wristband to the browser!
-      // THE MAGIC VAULT
       localStorage.setItem("token", data.token);
-      localStorage.setItem("userId", data.user.id); // ADD THIS LINE!
+      localStorage.setItem("userId", data.user.id); 
 
-      // 5. Success! Send the user to the home page feed
       router.push("/");
       
     } catch (err) {
@@ -52,48 +48,97 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 bg-white p-8 border border-gray-200 rounded-xl shadow-sm">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Welcome Back</h2>
+    <div className="w-full max-w-110 flex flex-col items-center">
+      {/* Branding/Logo Area */}
+      <div className="mb-xl text-center">
+        <div className="flex items-center justify-center mb-md">
+          <span className="material-symbols-outlined text-[48px] text-primary" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>blur_on</span>
+        </div>
+        <h1 className="font-headline-lg text-headline-lg text-primary tracking-tight">Zen Social</h1>
+        <p className="font-body-sm text-body-sm text-secondary mt-xs">Minimalist Feed & Professional Networking</p>
+      </div>
+
+      {/* Login Card */}
+      <div className="w-full bg-surface-container-lowest border border-outline-variant rounded-xl p-lg md:p-xl transition-all duration-300">
+        <header className="mb-lg">
+          <h2 className="font-headline-md text-headline-md text-primary mb-xs">Initialize Session</h2>
+          <p className="font-body-sm text-body-sm text-secondary">Enter your credentials to access the grid.</p>
+        </header>
+
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-600 p-3 rounded-lg mb-4 text-sm text-center">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleLogin} className="space-y-lg">
+          {/* Email Input */}
+          <div className="space-y-xs">
+            <label htmlFor="email" className="font-label-caps text-label-caps text-on-surface uppercase tracking-widest">Identifier (Email)</label>
+            <div className="relative flex items-center group">
+              <span className="material-symbols-outlined absolute left-md text-secondary text-[20px] transition-colors group-focus-within:text-primary">alternate_email</span>
+              <input 
+                id="email" 
+                type="email" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full pl-11 pr-md py-md bg-surface-container-lowest border border-outline-variant rounded-lg font-body-sm text-body-sm transition-all focus:outline-none focus:border-primary focus:ring-0 text-primary placeholder-secondary" 
+                placeholder="name@domain.tech" 
+              />
+            </div>
+          </div>
+
+          {/* Password Input */}
+          <div className="space-y-xs">
+            <div className="flex justify-between items-center">
+              <label htmlFor="password" className="font-label-caps text-label-caps text-on-surface uppercase tracking-widest">Secret Key</label>
+            </div>
+            <div className="relative flex items-center group">
+              <span className="material-symbols-outlined absolute left-md text-secondary text-[20px] transition-colors group-focus-within:text-primary">lock</span>
+              <input 
+                id="password" 
+                type={showPassword ? "text" : "password"} 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full pl-11 pr-md py-md bg-surface-container-lowest border border-outline-variant rounded-lg font-body-sm text-body-sm transition-all focus:outline-none focus:border-primary focus:ring-0 text-primary placeholder-secondary" 
+                placeholder="••••••••" 
+              />
+              <button 
+                type="button" 
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-md text-secondary hover:text-primary transition-colors"
+              >
+                <span className="material-symbols-outlined text-[20px]">{showPassword ? "visibility_off" : "visibility"}</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Submit Action */}
+          <div className="pt-md">
+            <button 
+              type="submit" 
+              disabled={isLoading}
+              className="w-full py-md bg-primary text-on-primary font-label-caps text-label-caps uppercase tracking-[0.15em] rounded-lg transition-all active:scale-[0.98] hover:opacity-90 disabled:opacity-50 disabled:active:scale-100 flex justify-center items-center h-13"
+            >
+              {isLoading ? <span className="material-symbols-outlined animate-spin">progress_activity</span> : "Initialize Session"}
+            </button>
+          </div>
+        </form>
+
+        <div className="mt-lg pt-lg border-t border-outline-variant flex flex-col gap-md">
+          <p className="font-body-sm text-body-sm text-secondary text-center">
+            <span>New to the ecosystem?</span>
+            <Link href="/register" className="font-label-caps text-label-caps text-primary underline underline-offset-4 ml-xs hover:text-secondary transition-colors">Create Identity</Link>
+          </p>
+        </div>
+      </div>
       
-      {error && (
-        <div className="bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm text-center">
-          {error}
-        </div>
-      )}
-
-      <form onSubmit={handleLogin} className="flex flex-col gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full border border-gray-300 p-2 rounded-lg text-black focus:ring-2 focus:ring-blue-500 outline-none"
-            placeholder="you@example.com"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full border border-gray-300 p-2 rounded-lg text-black focus:ring-2 focus:ring-blue-500 outline-none"
-            placeholder="••••••••"
-            required
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="mt-2 w-full bg-gray-900 text-white font-semibold p-2 rounded-lg hover:bg-gray-800 transition-colors disabled:bg-gray-400"
-        >
-          {isLoading ? "Logging in..." : "Log In"}
-        </button>
-      </form>
+      {/* Footer Decorative */}
+      <footer className="mt-xl flex flex-col items-center gap-md">
+        <div className="font-code text-code text-secondary opacity-40">V.2.0.4-STABLE // ENCRYPTED_AUTH_ACTIVE</div>
+      </footer>
     </div>
   );
 }
