@@ -7,6 +7,7 @@ interface Post{
   content: string;
   userId: string;
   createdAt: string;
+  username: string; 
 }
 
 export default async function Home() {
@@ -33,7 +34,7 @@ export default async function Home() {
                 <div className="flex flex-col justify-center w-full">
                   <div className="flex justify-between items-center w-full">
                     <span className="font-body-md text-body-md font-semibold text-primary">
-                      User {post.userId.substring(0, 5)}...
+                      {post.username || "Unknown User"}
                     </span>
                     <FollowButton targetUserId={post.userId} />
                   </div>
