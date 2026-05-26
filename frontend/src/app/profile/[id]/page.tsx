@@ -2,14 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import FollowButton from "@/app/components/FollowButton";
+import Link from "next/link"; // ADD THIS IMPORT
+// import FollowButton from "@/app/components/FollowButton";
 
-// The blueprint for the user's details
 interface UserProfile {
   id: string;
   username: string;
   email: string;
   createdAt: string;
+  followersCount: number; // ADD THIS
+  followingCount: number; // ADD THIS
 }
 
 // The blueprint for a single post
@@ -66,29 +68,19 @@ export default function ProfilePage() {
     <div className="max-w-2xl mx-auto min-h-screen bg-background border-x border-outline-variant pb-12">
       {/* Profile Header Section */}
       <header className="relative">
+        {/* THE NEW HOME BUTTON */}
+        <div className="absolute top-4 left-4 z-10">
+          <Link href="/" className="flex items-center justify-center w-10 h-10 rounded-full bg-background/80 backdrop-blur border border-outline-variant hover:bg-surface-container transition-colors">
+            <span className="material-symbols-outlined text-primary">arrow_back</span>
+          </Link>
+        </div>
+
         {/* Cover Image Placeholder */}
         <div className="h-48 w-full bg-surface-container-highest overflow-hidden">
           <div className="w-full h-full bg-linear-to-br from-surface-variant to-outline-variant opacity-50"></div>
         </div>
         
-        <div className="px-6 -mt-16 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-          <div className="relative">
-            <div className="w-32 h-32 rounded-full border-4 border-background bg-surface-container overflow-hidden flex items-center justify-center">
-              <span className="material-symbols-outlined text-[64px] text-surface-variant">person</span>
-            </div>
-          </div>
-          
-          <div className="flex gap-3 pb-2">
-            <button className="p-2.5 rounded-full border border-outline-variant text-on-surface hover:bg-surface-container-low transition-colors">
-              <span className="material-symbols-outlined">mail</span>
-            </button>
-            <button className="p-2.5 rounded-full border border-outline-variant text-on-surface hover:bg-surface-container-low transition-colors">
-              <span className="material-symbols-outlined">more_horiz</span>
-            </button>
-            {/* Injecting your dynamic Follow Button exactly where the designer placed it */}
-            <FollowButton targetUserId={targetUserId} />
-          </div>
-        </div>
+        {/* ... (keep your middle avatar/follow button code exactly the same) ... */}
         
         <div className="px-6 mt-6">
           <h1 className="font-headline-lg text-headline-lg text-primary">{profile?.username || "Unknown User"}</h1>
@@ -101,11 +93,13 @@ export default function ProfilePage() {
           
           <div className="flex gap-6 mt-6 pb-6 border-b border-outline-variant">
             <div className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity">
-              <span className="font-bold text-primary">14</span>
+              {/* THE REAL FOLLOWING COUNT */}
+              <span className="font-bold text-primary">{profile?.followingCount || 0}</span>
               <span className="text-on-surface-variant font-label-caps text-label-caps uppercase">Following</span>
             </div>
             <div className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity">
-              <span className="font-bold text-primary">128</span>
+              {/* THE REAL FOLLOWER COUNT */}
+              <span className="font-bold text-primary">{profile?.followersCount || 0}</span>
               <span className="text-on-surface-variant font-label-caps text-label-caps uppercase">Followers</span>
             </div>
           </div>

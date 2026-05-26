@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db } from "../db/index.js";
-import { users, posts } from "../db/schema.js";
+import { users, posts, followers } from "../db/schema.js";
 import bcrypt from "bcrypt"
 import  jwt  from "jsonwebtoken";
 import { eq, desc } from "drizzle-orm";
@@ -129,9 +129,16 @@ router.get("/:id", async (req, res) => {
       .where(eq(posts.userId, targetUserId))
       .orderBy(desc(posts.createdAt)); // Optional: import 'desc' to show newest first
 
+    const userFollowers = await db.select().from(followers).where(eq(followers.followingId, targetUserId));
+    const userFollowing = await db.select().from(followers).where(eq(followers.followerId, targetUserId));
+
     // 3. Send it all back as one clean package
     res.status(200).json({
-      profile: userProfile,
+      profile: {
+        ...userProfile,
+        followersCount: userFollowers.length, // Inject real count
+        followingCount: userFollowing.length  // Inject real count
+      },
       posts: userPosts
     });
 
