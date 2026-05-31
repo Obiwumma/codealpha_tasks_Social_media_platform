@@ -8,6 +8,7 @@ interface Comment {
   content: string;
   userId: string;
   createdAt: string;
+  username?: string; 
 }
 
 export default function CommentSection({ postId }: { postId: string }) {
@@ -58,6 +59,7 @@ export default function CommentSection({ postId }: { postId: string }) {
           content,
           userId: currentUserId,
           createdAt: new Date().toISOString(),
+          username: "You" // Instantly show "You" for the person who just typed it
         },
         ...prev,
       ]);
@@ -75,6 +77,9 @@ export default function CommentSection({ postId }: { postId: string }) {
         <div className="mb-4 flex flex-col gap-3">
           {comments.map((comment) => (
             <div key={comment.id} className="bg-surface-container p-3 rounded-lg text-body-sm font-body-sm text-on-surface">
+              <span className="font-bold text-primary text-[11px] uppercase tracking-wider block mb-1">
+                {comment.username || "Unknown"}
+              </span>
               {comment.content}
             </div>
           ))}

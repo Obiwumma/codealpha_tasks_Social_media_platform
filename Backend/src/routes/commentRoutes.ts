@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db } from "../db/index.js";
-import { comments } from "../db/schema.js";
+import { comments, users } from "../db/schema.js";
 import { desc, eq } from "drizzle-orm";
 
 const router = Router();
@@ -32,17 +32,21 @@ router.post("/", async (req, res) => {
 
 router.get("/:postId", async (req, res) => {
   try {
-    // 1. Extract the postId from the URL (Notice it is req.params, not req.body!)
     const { postId } = req.params;
 
-    const postComments = await db.select()
-      .from(comments)
-      .where(eq(comments.postId, postId))
-      .orderBy(desc(comments.createdAt));
+    // Use a LEFT JOIN to combine comment data with the commenter's username
+    const postComments = await db.select({
+      id: comments.id,
+      content: comments.content,
+      userId: comments.userId,
+      createdAt: comments.createdAt,
+      username: users.username // Grab the exact username!
+    })
+    .from(comments)
+    .leftJoin(users, eq(comments.userId, users.id))
+    .where(eq(comments.postId, postId)); 
 
-    // 3. Send back the array of comments
     res.status(200).json(postComments);
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch comments" });
